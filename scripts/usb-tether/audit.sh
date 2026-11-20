@@ -48,7 +48,7 @@ section() {
         true
 
     printf '\n===== functional check =====\n'
-    "$SCRIPT_DIR/check.sh" 2>&1 || true
+    sh "$SCRIPT_DIR/check.sh" 2>&1 || true
 } > "$raw" 2>&1
 
 sed -E \
