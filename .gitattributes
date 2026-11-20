@@ -4,3 +4,6 @@ EFI/OC/Drivers/** binary
 EFI/BOOT/** binary
 *.efi binary
 *.aml binary
+
+# macOS shell scripts must retain LF line endings when checked out on Windows.
+*.sh text eol=lf
