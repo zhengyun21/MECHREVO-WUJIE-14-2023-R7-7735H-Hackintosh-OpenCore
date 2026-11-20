@@ -10,11 +10,14 @@ from pathlib import Path
 
 
 BOOT_PROVIDER = "7C436110-AB2A-4BBB-A880-FE41995C9F82"
-BOOT_ARGS = (
-    "-v -lilubetaall debug=0x100 keepsyms=1 -no_compat_check -no_restart "
-    "amfi_get_out_of_my_way=0x1 amfi=0x80 ipc_control_port_options=0 "
-    "itlwm_he=1 kextlog=0xffff ocax210ref1"
-)
+
+
+def boot_args(marker):
+    return (
+        "-v -lilubetaall debug=0x100 keepsyms=1 -no_compat_check -no_restart "
+        "amfi_get_out_of_my_way=0x1 amfi=0x80 ipc_control_port_options=0 "
+        f"itlwm_he=1 kextlog=0xffff {marker}"
+    )
 
 
 def find_kext(entries, bundle_path):
@@ -39,6 +42,12 @@ def main():
     parser.add_argument("source", type=Path)
     parser.add_argument("reference", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument(
+        "--airport-entry",
+        choices=("current", "reference"),
+        default="reference",
+    )
+    parser.add_argument("--marker", default="ocax210ref1")
     args = parser.parse_args()
 
     with args.source.open("rb") as handle:
@@ -52,9 +61,6 @@ def main():
     lilu = find_kext(entries, "Lilu.kext")
     itlwm = find_kext(entries, "itlwm.kext")
     current_airport = find_kext(entries, "AirportItlwm.kext")
-    reference_airport = copy.deepcopy(
-        find_kext(reference_entries, "AirportItlwm.kext")
-    )
     reference_amfipass = copy.deepcopy(
         find_kext(reference_entries, "AMFIPass.kext")
     )
@@ -63,11 +69,16 @@ def main():
         raise ValueError("Lilu.kext must remain enabled")
 
     itlwm["Enabled"] = False
-    reference_airport["Enabled"] = True
     reference_amfipass["Enabled"] = True
 
-    airport_index = entries.index(current_airport)
-    entries[airport_index] = reference_airport
+    current_airport["Enabled"] = True
+    if args.airport_entry == "reference":
+        airport_index = entries.index(current_airport)
+        reference_airport = copy.deepcopy(
+            find_kext(reference_entries, "AirportItlwm.kext")
+        )
+        reference_airport["Enabled"] = True
+        entries[airport_index] = reference_airport
     entries[:] = [
         entry
         for entry in entries
@@ -82,7 +93,8 @@ def main():
 
     nvram = config.setdefault("NVRAM", {}).setdefault("Add", {})
     provider = nvram.setdefault(BOOT_PROVIDER, {})
-    provider["boot-args"] = BOOT_ARGS.encode("utf-8")
+    selected_boot_args = boot_args(args.marker)
+    provider["boot-args"] = selected_boot_args.encode("utf-8")
     provider["csr-active-config"] = bytes.fromhex("ff0f0000")
     config.setdefault("Misc", {}).setdefault("Security", {})[
         "SecureBootModel"
@@ -115,7 +127,7 @@ def main():
             )
 
     provider = generated["NVRAM"]["Add"][BOOT_PROVIDER]
-    if provider["boot-args"].decode("utf-8") != BOOT_ARGS:
+    if provider["boot-args"].decode("utf-8") != selected_boot_args:
         raise ValueError("boot arguments do not match the rescue profile")
     if provider["csr-active-config"].hex() != "ff0f0000":
         raise ValueError("SIP configuration does not match the reference")
@@ -126,7 +138,9 @@ def main():
     print("itlwm.kext=False")
     print("AMFIPass.kext=True")
     print("AirportItlwm.kext=True")
-    print(f"boot-args={BOOT_ARGS}")
+    print(f"airport_entry={args.airport_entry}")
+    print(f"marker={args.marker}")
+    print(f"boot-args={selected_boot_args}")
 
 
 if __name__ == "__main__":
