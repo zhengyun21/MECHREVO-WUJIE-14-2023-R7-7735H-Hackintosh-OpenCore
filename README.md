@@ -1,6 +1,6 @@
 # Hackintosh — 机械革命 无界14 2023（R7-7735H / Radeon 680M）
 
-**OpenCore 1.0.8 引导配置 · 完整折腾记录 · 当前状态：macOS Sequoia 已安装并进入系统；GPU/WindowServer 仍 WIP**
+**OpenCore 1.0.8 引导配置 · 完整折腾记录 · 当前状态：macOS Sequoia 日常基线可用；触控板、蓝牙、亮度调节仍未完成**
 
 ---
 
@@ -13,10 +13,10 @@
 | 独显 | 无 |
 | 内存 | 16GB LPDDR5-6400 |
 | 硬盘 | Intel 660p 512G + Fanxiang S690 1TB（双 M.2 NVMe） |
-| 网卡 | Intel AX210（Wi-Fi 6E，Recovery 通过 `itlwm + HeliPort`） |
+| 网卡 | Intel AX210（Wi-Fi 6E，当前通过 `AirportItlwm 2.4.0 Sequoia`） |
 | BIOS | AMI 2.15（无 NVMe 禁用项、无 PCIe 速度选项） |
 
-## 成果进展（截至 2026-11-20）
+## 成果进展（截至 2026-11-21）
 
 | 项目 | 状态 | 说明 |
 |---|---|---|
@@ -27,10 +27,13 @@
 | **Recovery 启动** | ✅ 已通过 | 成功进入 macOS Sequoia 恢复主菜单和安装器 |
 | **USB 输入** | ✅ 已修复 | USBToolBox 端口映射 + AppleUSBXHCI interrupter 1→0，鼠标移动已可用 |
 | **内部 NVMe** | ✅ 已识别 | 移除 `nvme=-1` 后，Fanxiang S690 1TB 与 Intel 512GB 均显示在磁盘工具 |
-| **Wi-Fi** | ✅ 已可用 | `AirportItlwm` 会阻塞进入 Recovery；改用 `itlwm 2.3.0 + HeliPort 1.5.0` |
+| **Wi-Fi** | ✅ 已可用 | `AirportItlwm 2.4.0 Sequoia + Lilu 1.7.3 + AMFIPass 1.4.1`，不再依赖 HeliPort |
 | **macOS 安装** | ✅ 已完成 | 使用完整 `15.8.2 / 24H232` 离线安装器安装到 Fanxiang APFS 分区 |
 | **首次进入系统** | ✅ 已通过 | 安装后能够启动并进入 macOS Sequoia 桌面 |
-| **GPU / WindowServer** | ⚠️ WIP | `AMDRadeonX6000` / `RDNA3Driver` 均未作为稳定驱动启用 |
+| **GPU / WindowServer** | ✅ 当前可用 | `RembrandtGfx.kext` 已启用；日常界面可进入，细分性能与 Metal 功能仍待记录 |
+| **触控板** | ❌ 未完成 | VoodooPS2 已启用，但触控板仍需继续调试 |
+| **蓝牙** | ❌ 未完成 | Intel Bluetooth 组件尚未形成稳定可用方案 |
+| **亮度调节** | ❌ 未完成 | 内屏亮度快捷键与原生亮度链路仍未完成 |
 | **NVMe 历史解法** | ✅ 已归档 | 旧配置曾用 `nvme=-1` 解决 IONVMeFamily panic |
 | 三码 | ⚠️ 已清空 | 发布版不含序列号，**使用前必须自行生成**（见下） |
 
@@ -40,12 +43,12 @@
 
 > ⚠️ **重要：发布版 config.plist 已清空三码（SystemSerialNumber / MLB / SystemUUID / ROM），不生成三码无法启动，且不要使用他人的三码。**
 
-> 🔐 **历史安全说明：** 早期公开提交中的部分 plist 曾包含真实 SMBIOS 标识。当前工作树已统一清空全部 tracked plist 的四项字段，但普通 Git 提交无法删除旧提交历史。建议为本机重新生成新的 iMacPro1,1 三码；如需彻底清除历史，需要对仓库执行一次经过备份的 history rewrite。
+> 🔐 **历史安全说明：** 早期公开提交中的部分 plist 曾包含真实 SMBIOS 标识。当前工作树已统一清空全部 tracked plist 的四项字段，但普通 Git 提交无法删除旧提交历史。建议为本机重新生成新的 MacPro7,1 三码；如需彻底清除历史，需要对仓库执行一次经过备份的 history rewrite。
 
-1. **生成自己的三码**（iMacPro1,1）：
+1. **生成自己的三码**（MacPro7,1）：
    - 下载 [macserial](https://github.com/acidanthera/OpenCorePkg/releases)（OpenCorePkg 内 Utilities/macserial），执行：
      ```
-     macserial -s -n 20 -m iMacPro1,1
+     macserial -s -n 20 -m MacPro7,1
      ```
    - 任选一组填入 `EFI/OC/config.plist` → `PlatformInfo/Generic`：
      - `SystemSerialNumber`
@@ -54,19 +57,19 @@
 2. **准备 EFI 分区**：将本仓库 `EFI` 目录复制到 FAT32 U 盘（或 ESP 分区）根目录，卷标随意。
 3. **放入完整 macOS 恢复镜像**：在 U 盘根目录建 `com.apple.recovery.boot/`，必须放入 `BaseSystem.dmg` + `BaseSystem.chunklist`。只有 `boot.efi` 和 `BootKernelExtensions.kc` 会进入 `Still waiting for root device.`。
 4. **BIOS 设置**：关闭 Secure Boot / Fast Boot，开启 UEFI USB 引导，从 U 盘启动 OpenCore。
-5. 选择 `OPENCORE (external) (dmg)` 或旧的 `F206 (external) (dmg)` 进入 Recovery。当前配置已通过完整安装和首次进入系统验证。
+5. 选择已安装 macOS 的系统卷进入系统。当前配置已完成启动、Wi-Fi、USB、内部 NVMe 和日常使用验证。
 
 ## 关键配置
 
 | 项 | 值 | 作用 |
 |---|---|---|
-| boot-args | `-v keepsyms=1 debug=0x144 -no_compat_check -no_restart kextlog=0xffff ocitlwm1` | 完成安装并进入系统的当前基线 |
+| boot-args | `-lilubetaall debug=0x100 keepsyms=1 -no_compat_check -no_restart amfi_get_out_of_my_way=0x1 amfi=0x80 ipc_control_port_options=0 itlwm_he=1 ocax210seq1 -rmbxhciintr1 msgbuf=4194304` | 当前日常可用基线 |
 | Kernel/Patch | 标准 AMD 补丁 + 6 个 XHCI interrupter 1→0 | 修复 AMD xHCI 连续输入事件延迟 |
 | Kernel/Block | `IONVMeFamily` 不屏蔽 | 允许内部 NVMe 发布 block storage device |
 | Kernel/Quirks | `DisableIoMapper=True` | 必需（AMD 平台） |
-| 启用 kext | Lilu / AppleMCEReporterDisabler / VirtualSMC / NVMeFix / AmdTscSync / itlwm / USBToolBox / UTBMap | `AirportItlwm` 保持禁用；二进制 kext 未提交 |
+| 启用 kext | Lilu / RembrandtGfx / AMFIPass / AirportItlwm / AppleMCEReporterDisabler / VirtualSMC / SMCBatteryManager / NVMeFix / AmdTscSync / VoodooPS2Controller 及插件 / USBToolBox / UTBMap | 当前工作树已归档所需二进制 |
 | 启用 ACPI | SSDT-EC-USBX / SSDT-PLUG-ALT-16CPU | 其余 XHC/APSP/OCMARK 诊断项已关闭 |
-| Drivers | OpenVariableRuntimeDxe（LoadEarly）/ OpenRuntime / OpenHfsPlus / ResetNvramEntry | 二进制驱动未提交 |
+| Drivers | OpenVariableRuntimeDxe（LoadEarly）/ OpenRuntime / OpenHfsPlus / OpenCanopy / ResetNvramEntry | 当前工作树已归档 |
 | DeviceProperties | 无 GPU 伪装 | 当前保留原始 `1002:1681` 设备身份，避免污染后续原生 X6000 调试 |
 
 ## 测试记录（完整版见 `docs/折腾记录.md`）
@@ -99,9 +102,11 @@ verbose console relocation 卡死 → 清理 XHC/APSP ACPI 诊断拓扑 → 精�
 
 ## 结论
 
-当前 OpenCore、内核、AppleAPIC、PCI、Recovery、USB 输入、内部 NVMe、AX210 Wi-Fi 和 macOS 安装链均已验证。`itlwm-recovery / ocitlwm1` 是首个“安装完成并进入系统”的公开基线。此里程碑不代表 680M 已驱动：AMD Radeon 680M 仍没有可用的硬件加速，NootedRed 不支持 Rembrandt RDNA2，`RDNA3Driver` 也不能直接驱动 `1002:1681`。
+`ocax210seq1` 是当前的日常可用基线。系统启动、AX210 Wi-Fi、USB、内部 NVMe、电池信息与基础输入栈已经可以工作；RembrandtGfx 已启用并允许进入当前桌面环境。
 
-本仓库为**全量方案存档**：包含 Recovery、USB/xHCI、NVMe、AX210、离线安装和首次进入系统的完整阶段记录。`docs/config-backups/` 含 41 个分阶段配置备份，可回溯每一步改动。
+当前仍未完成的项目是触控板、蓝牙和亮度调节。仓库保留这些组件的现有文件和阶段性配置，但不会把未验证方案描述为已解决。
+
+本仓库为**全量方案存档**：包含 OpenCore、Recovery、USB/xHCI、NVMe、AX210、离线安装和已进入系统后的完整阶段记录。`docs/config-backups/` 保存分阶段配置，当前状态见 `config-working-macos-sequoia-2026-11-21.plist`。
 
 ## 参考
 
