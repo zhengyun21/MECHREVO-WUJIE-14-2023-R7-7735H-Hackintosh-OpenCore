@@ -1,3 +1,11 @@
+# 机械革命无界14 2023 Hackintosh 折腾记录（历史存档）
+
+> **说明：** 本文保留 2026-10-28 ~ 2026-11-21 的过程记录，其中部分结论（如“680M 无驱动”“触控板/蓝牙/亮度未完成”）**已被 2026-11-24 的验证取代**。当前状态以根目录 [README.md](../README.md) 为准。
+>
+> 旧的 `docs/config-backups/` 已从公开历史中移除；旧快照见 `legacy-2026-11` 分支。
+
+---
+
 # 机械革命无界14 2023 Hackintosh 折腾存档
 
 > 日期：2026-10-28 ~ 2026-11-12 · 当前结论：**引导链已验证，缺少可挂载的 macOS 根卷；GPU/WindowServer 尚未完成**
@@ -349,3 +357,18 @@ com.apple.driver.usb.AppleUSBXHCI
 - `itlwm` 与 `AirportItlwm` 不同时启用
 
 完整配置已归档为 `docs/config-backups/config-working-macos-sequoia-2026-11-21.plist`。公开版本清空 `SystemSerialNumber`、`MLB`、`SystemUUID` 和 `ROM`。
+
+
+---
+
+## 2026-11-24 现状更新
+
+- **显卡**：RembrandtGfx 0.1.0 + `0x73FF` 伪装 + 本机 VFCT VBIOS，Metal/桌面可用；报告 512 MB 显存（UMA/驱动报告值）。
+- **触控板**：确认 I2C HID（`AMDI0010` / `AMDI0030` / `PNP0C50`），启用 VoodooI2C 2.9.1 + VoodooI2CHID + VoodooGPIO；改用上游 VoodooInput 1.1.6 + macOS 原生轻点。自定义 VoodooInput 1.1.7（180 ms 双击窗口）在本机 Precision 触摸板上 Finder 双击/三击不稳定，已弃用。
+- **蓝牙**：IntelBluetoothFirmware/IntelBTPatcher + BlueToolFixup 可用。
+- **亮度**：BrightnessKeys + SSDT-PNLF 可用。
+- **睡眠/唤醒**：正常。
+- **音频**：VoodooHDA 可用，但冷启动无声，睡眠唤醒后恢复；Windows 同样存在，疑似引导阶段音频设备初始化问题。
+- **Wi-Fi**：AX210 + AirportItlwm 2.4.0 可用，但需要冷启动。
+- **外接显示 / 硬件视频编解码**：仍不支持。
+- **仓库**：EFI 从内置 ESP 重新同步；公开树移除真实 SMBIOS、`ATY,bin_image`、日志与 config 备份；历史已重写；维护者本机已换新 SMBIOS。
