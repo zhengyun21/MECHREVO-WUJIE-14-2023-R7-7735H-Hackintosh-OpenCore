@@ -1,9 +1,8 @@
-﻿# 禁止对 kext 与引导二进制做换行/文本转换（防签名失效）
+# Keep kext/EFI binaries untouched; shell/python text uses LF.
 EFI/OC/Kexts/** -text
 EFI/OC/Drivers/** binary
 EFI/BOOT/** binary
 *.efi binary
 *.aml binary
-
-# macOS shell scripts must retain LF line endings when checked out on Windows.
 *.sh text eol=lf
+*.py text eol=lf

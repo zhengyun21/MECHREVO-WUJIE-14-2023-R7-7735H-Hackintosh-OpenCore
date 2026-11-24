@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>25G83</string>
+	<string>24H23</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>KEXT</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.9.8</string>
+	<string>1.9.9</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleSupportedPlatforms</key>
@@ -25,23 +25,23 @@
 		<string>MacOSX</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.9.8</string>
+	<string>1.9.9</string>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
-	<string>25F70</string>
+	<string>24F74</string>
 	<key>DTPlatformName</key>
 	<string>macosx</string>
 	<key>DTPlatformVersion</key>
-	<string>26.5</string>
+	<string>15.5</string>
 	<key>DTSDKBuild</key>
-	<string>25F70</string>
+	<string>24F74</string>
 	<key>DTSDKName</key>
-	<string>macosx26.5</string>
+	<string>macosx15.5</string>
 	<key>DTXcode</key>
-	<string>2660</string>
+	<string>1640</string>
 	<key>DTXcodeBuild</key>
-	<string>17F113</string>
+	<string>16F6</string>
 	<key>IOKitPersonalities</key>
 	<dict>
 		<key>ALCUserClientProvider</key>
@@ -17159,6 +17159,32 @@
 					<key>WakeConfigData</key>
 					<data>
 					AUcMAg==
+					</data>
+					<key>WakeVerbReinit</key>
+					<true/>
+				</dict>
+				<dict>
+					<key>AFGLowPowerState</key>
+					<data>
+					AwAAAA==
+					</data>
+					<key>Codec</key>
+					<string>SN6140 14f1:1f87 BIOS-native pins (patched 2026-11-23)</string>
+					<key>CodecID</key>
+					<integer>351346567</integer>
+					<key>ConfigData</key>
+					<data>
+					ARcckAEXHRcBFx4BARcfUQEaHJABGh2nARoe
+					AQEaHyABGRwEARkdoQEZHpABGR8QARYcBAEW
+					HSEBFh5AARYfQAF3DAIBZwwC
+					</data>
+					<key>FuncGroup</key>
+					<integer>1</integer>
+					<key>LayoutID</key>
+					<integer>15</integer>
+					<key>WakeConfigData</key>
+					<data>
+					AXcMAgFnDAI=
 					</data>
 					<key>WakeVerbReinit</key>
 					<true/>

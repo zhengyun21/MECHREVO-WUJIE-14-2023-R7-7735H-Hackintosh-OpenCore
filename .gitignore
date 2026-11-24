@@ -1,5 +1,15 @@
-﻿.DS_Store
+.DS_Store
 Thumbs.db
 desktop.ini
 __pycache__/
 *.pyc
+
+# private/runtime artifacts (never commit)
+opencore-*.txt
+NVRAM/
+SysReport/
+docs/config-backups/
+*.log
+*.plist.bak
+config-before-*.plist
+SMBIOS-*.txt
