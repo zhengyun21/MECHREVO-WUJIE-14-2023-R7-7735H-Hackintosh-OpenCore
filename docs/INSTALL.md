@@ -60,6 +60,7 @@ macserial -s -n 20 -m MacPro7,1
 3. 音频/麦克风冷启动无声或无法识别时，睡眠再唤醒。
 4. Wi-Fi：冷启动/热启动均已实测可用；若遇异常，断电冷启动可恢复。
 5. 重新登录 iMessage/App Store（如果换过三码）。
+6. AirDrop：EFI 已内置 AWDL 版 AirportItlwm + BlueToolFixup advsets 与 `-itlawdl*` / `-btlfxadvsets*` 参数；不要同时启用 `itlwm.kext` 或其他 AirportItlwm。替换、验证与回滚见 [AIRDROP.md](AIRDROP.md)。
 
 ## 6. 急救盘
 

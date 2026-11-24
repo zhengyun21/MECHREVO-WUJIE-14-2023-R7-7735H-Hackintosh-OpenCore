@@ -16,9 +16,9 @@
 | AMFIPass | MIT | https://github.com/dhinakg/AMFIPass |
 | USBToolBox / UTBMap | MIT | https://github.com/USBToolBox/kext |
 | RembrandtGfx 0.1.0 | **GPL-2.0** | https://github.com/caoshiyuan0211-blip/winmax2-2022-6800u-hackintosh |
-| AirportItlwm | GPL-2.0 | https://github.com/OpenIntelWireless/AirportItlwm |
+| AirportItlwm（AWDL 构建） | GPL-2.0 | https://github.com/kevineduardo/ax210-airdrop-awdl-hackintosh （fork of OpenIntelWireless/itlwm） |
 | IntelBluetoothFirmware / IntelBTPatcher | **GPL-3.0** | https://github.com/OpenIntelWireless/IntelBluetoothFirmware |
-| BlueToolFixup | GPL-2.0 | https://github.com/acidanthera/BrcmPatchRAM |
+| BlueToolFixup（advsets 构建） | GPL-2.0 | https://github.com/kevineduardo/ax210-airdrop-awdl-hackintosh （fork of acidanthera/BrcmPatchRAM） |
 | VoodooI2C / VoodooI2CHID / VoodooGPIO / VoodooI2CServices | **GPL-3.0** | https://github.com/VoodooI2C/VoodooI2C |
 | VoodooHDA | GPL-2.0 | 上游 VoodooHDA 项目 |
 | AmdTscSync | 见上游 | 上游 AmdTscSync 项目 |

@@ -8,6 +8,13 @@
 - 摄像头：可用。
 - 麦克风：可用，但与扬声器相同，冷启动后需睡眠唤醒才能识别到声音。
 
+### AirDrop / AWDL
+
+- `AirportItlwm.kext` 替换为 AWDL 构建（`2.4.0-awdl-8738ce5`），`BlueToolFixup.kext` 替换为 2.7.3 advsets 版。
+- `boot-args` 增加 `-itlawdl*`、`-btlfxadvsets*`，并用 `-itlawdlanybuild` / `-btlfxadvsetsany` 适配未在测试列表中的 15.8.3。
+- 实测 `awdl0` UP、`AirDrop: Supported`；新增 `docs/AIRDROP.md`。
+- 来源：<https://github.com/kevineduardo/ax210-airdrop-awdl-hackintosh>（实验性 beta）。
+
 ### EFI
 
 - 以当前可工作的内置 ESP 为基准重新同步 `EFI/`。

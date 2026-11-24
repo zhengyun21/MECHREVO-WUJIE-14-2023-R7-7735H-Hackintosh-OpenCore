@@ -3,11 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>24G830</string>
+	<string>24H232</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
 	<string>AirportItlwm</string>
+	<key>CFBundleGetInfoString</key>
+	<string>AirportItlwm AWDL edition (github.com/kevineduardo/ax210-airdrop-awdl-hackintosh), based on OpenIntelWireless/itlwm</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.zxystd.AirportItlwm</string>
 	<key>CFBundleInfoDictionaryVersion</key>

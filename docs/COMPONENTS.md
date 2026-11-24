@@ -37,10 +37,10 @@
 
 | 组件 | 版本 | 上游 | 许可证 |
 |---|---|---|---|
-| AirportItlwm | 2.4.0 | <https://github.com/OpenIntelWireless/AirportItlwm> | GPL-2.0 |
+| AirportItlwm | 2.4.0（AWDL 构建 `2.4.0-awdl-8738ce5`） | <https://github.com/kevineduardo/ax210-airdrop-awdl-hackintosh>（基于 OpenIntelWireless/itlwm） | GPL-2.0 |
 | IntelBluetoothFirmware | 2.5.3 | <https://github.com/OpenIntelWireless/IntelBluetoothFirmware> | **GPL-3.0** |
 | IntelBTPatcher | 2.5.3 | 同上 | GPL-3.0 |
-| BlueToolFixup | 2.7.2 | <https://github.com/acidanthera/BrcmPatchRAM> | GPL-2.0 |
+| BlueToolFixup | 2.7.3（advsets 构建） | <https://github.com/kevineduardo/ax210-airdrop-awdl-hackintosh>（基于 acidanthera/BrcmPatchRAM） | GPL-2.0 |
 
 ## 输入 / 音频
 
@@ -62,3 +62,4 @@
 - 本配置文件实际启用 **VoodooHDA**，AppleALC 仅作为备用保留并关闭。
 - 触控板使用 VoodooI2C + VoodooI2CHID；`VoodooPS2Trackpad`/`VoodooPS2Mouse` 关闭；`VoodooI2C` 自带的 `VoodooInput` 副本已删除（避免与 PS2 包内上游 1.1.6 重复）。
 - `ATY,bin_image` VBIOS 不随仓库分发；需从本机 VFCT 生成，见 [GPU.md](GPU.md)。
+- AirDrop/AWDL 使用第三方 AWDL 分支的 AirportItlwm 与 BlueToolFixup advsets 构建，并需要对应 `-itlawdl*` / `-btlfxadvsets*` 启动参数；详见 [AIRDROP.md](AIRDROP.md)。升级 macOS 前先核对该分支支持的版本。
