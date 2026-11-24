@@ -369,6 +369,8 @@ com.apple.driver.usb.AppleUSBXHCI
 - **亮度**：BrightnessKeys + SSDT-PNLF 可用。
 - **睡眠/唤醒**：正常。
 - **音频**：VoodooHDA 可用，但冷启动无声，睡眠唤醒后恢复；Windows 同样存在，疑似引导阶段音频设备初始化问题。
-- **Wi-Fi**：AX210 + AirportItlwm 2.4.0 可用，但需要冷启动。
+- **麦克风**：可用；与音频相同，冷启动后需睡眠唤醒才能识别到声音。
+- **摄像头**：可用（2026-11-24 实测）。
+- **Wi-Fi**：AX210 + AirportItlwm 2.4.0 可用；冷启动/热启动均已实测可用。
 - **外接显示 / 硬件视频编解码**：仍不支持。
 - **仓库**：EFI 从内置 ESP 重新同步；公开树移除真实 SMBIOS、`ATY,bin_image`、日志与 config 备份；历史已重写；维护者本机已换新 SMBIOS。

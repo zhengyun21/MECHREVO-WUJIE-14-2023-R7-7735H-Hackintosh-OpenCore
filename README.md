@@ -4,7 +4,7 @@
 
 本仓库是机械革命无界14 2023（AMD Ryzen 7 7735H + Radeon 680M）的 OpenCore EFI、安装记录与排障文档。2026-11-24 已按当前可工作的内置 ESP 重新同步，并重写了文档。
 
-> **English summary:** OpenCore EFI and notes for the MECHREVO WUJIE 14 2023 (Ryzen 7 7735H / Radeon 680M). GPU acceleration works through RembrandtGfx 0.1.0 with the 680M spoofed as Navi 23 (`0x73FF`); the machine-specific VBIOS and SMBIOS serials are **not** included. Wi-Fi needs a cold boot; audio only works after sleep/wake (same on Windows); external display and hardware video decode are unsupported. Touchpad works through VoodooI2C 2.9.1 with macOS native tap-to-click. Use your own SMBIOS and generate your own VBIOS from your VFCT.
+> **English summary:** OpenCore EFI and notes for the MECHREVO WUJIE 14 2023 (Ryzen 7 7735H / Radeon 680M). GPU acceleration works through RembrandtGfx 0.1.0 with the 680M spoofed as Navi 23 (`0x73FF`); the machine-specific VBIOS and SMBIOS serials are **not** included. Wi-Fi works after both cold and warm boots in the latest test; speakers and microphone only work after sleep/wake (same on Windows); camera works; external display and hardware video decode are unsupported. Touchpad works through VoodooI2C 2.9.1 with macOS native tap-to-click. Use your own SMBIOS and generate your own VBIOS from your VFCT.
 
 ---
 
@@ -28,23 +28,25 @@
 |---|---|---|
 | 显卡 / Metal | ✅ 可用 | RembrandtGfx 0.1.0；680M 伪装 Navi 23 `0x73FF`；报告 512 MB 显存（UMA/驱动报告值，实际共享内存 + GART） |
 | 内屏 / 亮度 | ✅ 可用 | `SSDT-PNLF.aml` + BrightnessKeys 1.0.3 |
-| Wi-Fi | ⚠️ 有条件 | AX210 + AirportItlwm 2.4.0；**需要冷启动**才能使用 |
+| Wi-Fi | ✅ 可用 | AX210 + AirportItlwm 2.4.0；冷启动/热启动均已实测可用 |
 | 蓝牙 | ✅ 可用 | IntelBluetoothFirmware / IntelBTPatcher 2.5.3 + BlueToolFixup 2.7.2 |
 | 音频 | ⚠️ 有条件 | VoodooHDA 3.6.8；**冷启动无声，睡眠唤醒后正常**；Windows 上同样存在，疑似引导阶段音频设备初始化问题 |
+| 麦克风 | ⚠️ 有条件 | 可用；与音频相同，**冷启动后需睡眠唤醒才能识别到声音** |
+| 摄像头 | ✅ 可用 | 2026-11-24 实测可用 |
 | 触控板 | ✅ 可用 | VoodooI2C 2.9.1 + VoodooI2CHID；使用 macOS 原生轻点（不再使用自定义 VoodooInput） |
 | 睡眠 / 唤醒 | ✅ 可用 | 正常唤醒 |
 | USB | ✅ 可用 | USBToolBox + UTBMap；AMD xHCI interrupter 补丁 |
 | NVMe | ✅ 可用 | NVMeFix 1.1.3；两块 NVMe 均识别 |
 | 外接显示 | ❌ 不支持 | 当前 RembrandtGfx 方案未打通 |
 | 硬件视频编解码 | ❌ 不支持 | 视频可播放不等于硬解可用 |
-| 摄像头 / 麦克风 / 指纹 | ❓ 未验证 | — |
+| 指纹 | ❓ 未验证 | — |
 | iMessage / App Store | ❓ 需自行验证 | 公开版不含三码；换新三码后需重新登录 |
 
 ## 2026-11-24 本次更新
 
 - EFI 从当前可工作的内置 ESP 同步，修正了旧仓库里 `device-id 0x737F`、VoodooI2C 关闭等过时内容。
 - 触控板改为 **VoodooI2C 2.9.1 + VoodooI2CHID + 系统原生轻点**；自定义 VoodooInput（180 ms 双击窗口）在本机 Precision 触摸板上不稳定，已弃用（见 [docs/TOUCHPAD.md](docs/TOUCHPAD.md)）。
-- 蓝牙、亮度、睡眠/唤醒按实测更新为可用；音频、Wi-Fi、外接显示、硬解按实测写明限制。
+- 蓝牙、亮度、睡眠/唤醒按实测更新为可用；Wi-Fi 复测冷启动/热启动均可用；摄像头可用；麦克风可用但需睡眠唤醒；外接显示、硬解按实测写明限制。
 - **公开仓库移除**：真实 SMBIOS 四码、`ATY,bin_image` VBIOS、OpenCore 日志、NVRAM/SysReport、旧 config 备份；历史已重写。
 - 维护者本机已生成新 SMBIOS；公开配置里四码为空，必须自行生成。
 - 旧 2026-11-21 快照保存在 `legacy-2026-11` 分支（仅文档/脚本，不含 config/VBIOS）。
@@ -81,7 +83,7 @@ scripts/
 3. **准备引导盘**：把 `EFI/` 放到 FAT32 U 盘或 ESP 根目录；做 Recovery 还需在 U 盘根目录放 `com.apple.recovery.boot/BaseSystem.dmg` + `BaseSystem.chunklist`。
 4. **BIOS**：版本 2.22.1282；关闭 Secure Boot / Fast Boot，使用 UEFI 启动。
 5. **首次进入系统**：触控板设置——打开“轻点来点按”，辅助点击选“双指轻点”，关闭“使用触控板来拖移”（详见 [docs/TOUCHPAD.md](docs/TOUCHPAD.md)）。
-6. **音频**：冷启动无声时，睡眠再唤醒即可；这是当前已知限制。
+6. **音频 / 麦克风**：冷启动无声或麦克风未被识别时，睡眠再唤醒即可；这是当前已知限制。
 7. **急救盘**：建议保留一个与内置 EFI 同版本的 U 盘 EFI，并保留旧版 `EFI.bak-*`。
 
 ## 关键配置
@@ -101,8 +103,8 @@ scripts/
 
 ## 已知问题
 
-- **Wi-Fi 需要冷启动**：热重启后可能不可用，断电冷启动恢复正常。
-- **音频冷启动无声**：睡眠唤醒后恢复；Windows 上同样存在，疑似 OpenCore 引导阶段的音频设备初始化问题，当前未修复。
+- **Wi-Fi 稳定性**：2026-11-24 复测热启动正常；若遇到异常，断电冷启动可恢复。
+- **音频 / 麦克风冷启动异常**：扬声器冷启动无声、麦克风冷启动后无法识别；睡眠唤醒后恢复。Windows 上同样存在，疑似 OpenCore 引导阶段的音频设备初始化问题，当前未修复。
 - **外接显示 / 硬件视频编解码**：当前 RembrandtGfx 方案不支持。
 - **系统更新**：升级 macOS 前先备份 EFI；RembrandtGfx 与 VoodooI2C 可能需要重新验证。
 - **公开版不含三码与 VBIOS**：这是有意为之，避免泄露与误用。
