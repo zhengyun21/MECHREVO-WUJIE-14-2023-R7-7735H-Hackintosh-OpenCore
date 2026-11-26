@@ -55,9 +55,10 @@ ioreg -rl -c RembrandtGPUPeer | tr ',' '\n' | grep -E '"(armed|arm_why|vbios_src
 - Wi-Fi：正常
 - 睡眠/唤醒：**当前失效**
 - 其他功能：未在本分支复测
+- 流畅度：本机低于 `main`（RembrandtGfx），卡顿更多；日常使用建议 `main`
 - 不需要 `ATY,bin_image`：VBIOS 由插件从本机 ACPI `VFCT` 读取
 
-上游已知限制：USB-C DP 外接显示未打通、WebGL 抗锯齿、偶发 stall、部分小字形斑点。详见上游 README。
+上游已知限制：USB-C DP 外接显示未打通、WebGL 抗锯齿、偶发 stall、部分小字形斑点；本机整体流畅度低于 `main`。详见上游 README。
 
 ## 许可证
 

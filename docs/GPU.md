@@ -8,7 +8,7 @@
 - **不需要 `ATY,bin_image`**：`RembrandtGPU` 插件启动时从本机 ACPI `VFCT` 表读取 VBIOS；公共仓库不含任何板卡 VBIOS。
 - `RBAMDFramebuffer.kext` 自写 IOFramebuffer，接管内屏、亮度与刷新率；装到 `/Library/Extensions` 并重建 aux KC。
 - 680M 没有独立显存，是 UMA 核显；macOS 报告 **512 MB** 是 UMA carve-out/报告值，实际显存池来自共享内存 + GART。
-- 本分支实测：**Metal 3**、**2560×1600 @120Hz**、HiDPI **1280×800**、**Wi-Fi 正常**、**睡眠失效**；其他功能未复测。
+- 本分支实测：**Metal 3**、**2560×1600 @120Hz**、HiDPI **1280×800**、**Wi-Fi 正常**、**睡眠失效**；其他功能未复测。**本机主观对比：流畅度低于 `main`（RembrandtGfx），卡顿/掉帧更明显。**
 
 ## 组件与 UUID
 
@@ -45,11 +45,11 @@
 | 系统内存 | 16 GB 共享池 |
 | GART | 驱动按需映射系统内存给 GPU（本机约 6 GB 窗口） |
 
-本机 BIOS 没有可用的 UMA Frame Buffer Size 调整项，所以 512 MB 是当前上限。显存 heap 紧张时会退到 GART，重负载可能出现分配失败/卡顿；日常桌面与 Metal 可用。
+本机 BIOS 没有可用的 UMA Frame Buffer Size 调整项，所以 512 MB 是当前上限。显存 heap 紧张时会退到 GART，重负载可能出现分配失败/卡顿；日常桌面与 Metal 可用，但本机流畅度仍低于 `main`，日常使用建议 `main`。
 
 ## 已验证 / 未验证
 
-- ✅ 显卡 / Metal 3 / 内屏 2560×1600 @120Hz / HiDPI 1280×800
+- ✅ 显卡 / Metal 3 / 内屏 2560×1600 @120Hz / HiDPI 1280×800（但流畅度低于 main，见下）
 - ✅ Wi-Fi（AX210 + AirportItlwm）
 - ❌ 睡眠 / 唤醒（当前 Radeonized 方案失效）
 - ❓ 亮度、AirDrop、蓝牙、音频/麦克风、摄像头、触控板、USB、NVMe：未在本分支复测
@@ -79,12 +79,14 @@ rbgpuvblhz=119807Hz
 ## 已知表现
 
 - 系统信息/显示器设置可能显示物理尺寸 **42"**（fbkext 未把 EDID 交给 IODisplay）；不影响实际 2560×1600/120Hz。本仓库不收录修改该显示的 override。
-- 上游标注偶发 stall；重负载时可能感知卡顿。
+- 上游标注偶发 stall；本机实测流畅度低于 `main`（RembrandtGfx），卡顿/掉帧更明显，不限于重负载。
+- 可能原因：512 MB UMA carve-out/VRAM heap 紧张与 GART 回退；上游偶发 stall（work submitted never retires）。
+- 未完成 60Hz + `rbgpuvblhz=60000Hz` 等进一步对比；不要把未验证的调优当成结论。
 - `RBAMDFramebuffer` 在 Recovery/安装器中不接管，保持 stock 路径。
 
 ## 回退到 main（RembrandtGfx）
 
-如果 Radeonized 的稳定性不能满足日常使用，可回到 `main` 分支的 RembrandtGfx 方案：
+如果追求日常流畅度，建议直接用 `main`（RembrandtGfx）：本机 Radeonized 流畅度更低、卡顿更多；仅需实验/参考时使用本分支：
 
 - `main` 使用 RembrandtGfx 0.1.0 + `device-id 0x73FF` 伪装 + 本机生成的 `ATY,bin_image`。
 - 本分支的 `EFI/OC/Kexts/RembrandtGfx.kext` 仍保留但 **Disabled**，仅作参考；回退时建议直接使用 `main` 的完整 EFI，避免混用两套显卡配置。

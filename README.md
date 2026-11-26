@@ -5,8 +5,9 @@
 > **本分支是 Radeonized 实验方案；`main` 仍是 RembrandtGfx 的稳定基线。**
 > 本分支把显卡驱动换成了 [Radeonized](https://github.com/FranciumOS-org/Radeonized) v0.1.1：680M 以真实 `1002:1681` 出现，不再伪装成 Navi 23，也不再需要 `ATY,bin_image` VBIOS。
 > **当前实测：显卡可用（Metal 3）、Wi-Fi 正常、睡眠失效；其他功能未在本分支复测。**
+> **本机主观对比：Radeonized 的流畅度低于 `main`（RembrandtGfx），卡顿/掉帧更明显；日常使用请优先 `main`，本分支仅用于实验/参考。**
 
-> **English summary:** Experimental branch using **Radeonized v0.1.1** for the AMD Radeon 680M (native `1002:1681`, no spoof, no VBIOS injection). GPU acceleration works (Metal 3, 2560×1600 @120Hz, HiDPI 1280×800, 512 MB UMA); Wi-Fi works; **sleep is currently broken**; other functions were **not retested** on this branch. The `main` branch remains the RembrandtGfx baseline. Public config contains no real SMBIOS, no VBIOS and no config backups.
+> **English summary:** Experimental branch using **Radeonized v0.1.1** for the AMD Radeon 680M (native `1002:1681`, no spoof, no VBIOS injection). GPU acceleration works (Metal 3, 2560×1600 @120Hz, HiDPI 1280×800, 512 MB UMA); Wi-Fi works; **sleep is currently broken**; other functions were **not retested** on this branch. The `main` branch remains the RembrandtGfx baseline. Public config contains no real SMBIOS, no VBIOS and no config backups. On this machine Radeonized is **less smooth than `main` (RembrandtGfx)** with more stuttering; use `main` for daily driving and treat this branch as experimental/reference only.
 
 ---
 
@@ -41,7 +42,8 @@
 
 | 功能 | 状态 | 说明 |
 |---|---|---|
-| 显卡 / Metal | ✅ 可用 | Radeonized v0.1.1；原生 `1002:1681`；Metal 3；2560×1600 @120Hz；HiDPI 1280×800；报告 **512 MB**（UMA carve-out） |
+| 显卡 / Metal | ✅ 可用 | Radeonized v0.1.1；原生 `1002:1681`；Metal 3；2560×1600 @120Hz；HiDPI 1280×800；报告 **512 MB**（UMA carve-out）；加速可用，但本机流畅度见下行 |
+| 流畅度 / 卡顿 | ⚠️ 不如 main | 本机主观对比：Radeonized 比 `main`（RembrandtGfx）更容易卡顿/掉帧；日常使用建议 `main` |
 | Wi-Fi | ✅ 可用 | AX210 + AirportItlwm；本分支实测正常 |
 | 睡眠 / 唤醒 | ❌ 失效 | 当前 Radeonized 方案已知问题；请勿在未保存工作时依赖睡眠 |
 | 内屏 / 亮度 | ❓ 未复测 | 内屏显示正常，亮度键未在本分支逐项复测 |
@@ -64,7 +66,7 @@
   - `RembrandtGfx.kext` 保留在 `EFI/OC/Kexts` 但 **Disabled**，作为回退；
   - GPU `DeviceProperties` 删除 `device-id 0x73FF` / `model` / `ATY,bin_image` / `CFG_*`，恢复原生 `1002:1681`。
 - 新增 `Radeonized/RBAMDFramebuffer.kext`、MIT/AMD 许可证与安装脚本。
-- 实测：Metal 3、2560×1600@120Hz、HiDPI 1280×800、512 MB；**Wi-Fi 正常、睡眠失效、其他功能未复测**。
+- 实测：Metal 3、2560×1600@120Hz、HiDPI 1280×800、512 MB；**Wi-Fi 正常、睡眠失效、其他功能未复测**。 本机主观对比：流畅度低于 `main`（RembrandtGfx），卡顿/掉帧更多；日常使用建议 `main`。
 - OpenCore `Resolution` 保持 `2560x1600@32`（Radeonized fb 的面板几何依赖它），`UIScale=2` 让引导图标等比放大。
 - 安全：移除 main 上遗留的两个 `config.before-*.plist` 备份（含真实 SMBIOS/ROM 与 `ATY,bin_image`），`.gitignore` 增加 `config.before-*.plist`。
 - 新增实测截图 `docs/images/radeonized-680m.png`。
@@ -123,6 +125,8 @@ scripts/
 7. **睡眠**：当前失效，先不要依赖；需要时用关机/重启替代。
 8. **急救盘**：保留一个与内置 EFI 同版本的 U 盘 EFI；更新前备份旧 `EFI` 与 `/Library/KernelCollections/AuxiliaryKernelExtensions.kc`。
 
+> **体验提示：** 本机 Radeonized 流畅度低于 `main`（RembrandtGfx），卡顿更多；日常使用建议 `main`。
+
 ## 关键配置
 
 | 项 | 值 |
@@ -144,7 +148,8 @@ scripts/
 - **512 MB 显存**：UMA carve-out，当前 BIOS 无法调整；显存 heap 偏紧时会退到 GART，重负载可能卡顿。
 - **外接显示 / 硬件视频编解码**：Radeonized 上游当前未打通。
 - **系统信息可能显示 42"**：fbkext 未把 EDID 交给 IODisplay，物理尺寸显示为默认值；不影响实际 2560×1600/120Hz。本仓库不收录修改该显示的 override。
-- **实验性**：Radeonized 上游仍标注偶发 stall；如追求稳定，可回到 `main` 的 RembrandtGfx 方案。
+- **实验性 / 流畅度**：Radeonized 上游仍标注偶发 stall；本机实测流畅度低于 `main`（RembrandtGfx），卡顿/掉帧更明显，不限于重负载。日常使用建议 `main`，本分支仅作实验/参考。
+- **未做进一步调优**：60Hz + `rbgpuvblhz=60000Hz` 等性能对比未完成；不要把未验证的调优当成结论。
 - **公开版不含三码与 VBIOS**：必须自行生成 SMBIOS；VBIOS 由 ACPI `VFCT` 在启动时读取。
 - **截图隐私**：`docs/images/radeonized-680m.png` 为原图，含维护者本机用户名。
 

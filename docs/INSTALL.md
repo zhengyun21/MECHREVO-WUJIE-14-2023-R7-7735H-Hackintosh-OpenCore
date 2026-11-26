@@ -99,6 +99,8 @@ sudo kmutil inspect -B "$live" --show-kext-uuids | grep 31B2C56B
 5. 其他功能（亮度、AirDrop、蓝牙、音频/麦克风、摄像头、触控板、USB、NVMe、外接显示、硬解）未在本分支复测，按需逐项验证。
 6. 若换过三码，重新登录 iMessage/App Store。
 
+> **体验提示：** 本机 Radeonized 流畅度低于 `main`（RembrandtGfx），卡顿更多；日常使用建议 `main`。
+
 ## 6. 恢复 / 回滚
 
 - **恢复 aux KC**：`sudo cp -p /Library/KernelCollections/AuxiliaryKernelExtensions.kc.bak-<时间戳> /Library/KernelCollections/AuxiliaryKernelExtensions.kc`

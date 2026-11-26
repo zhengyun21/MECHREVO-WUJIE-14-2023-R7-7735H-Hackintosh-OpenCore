@@ -9,6 +9,7 @@
 - `RembrandtGPU.kext` 排在 `Lilu.kext` 之后并启用；`RembrandtGfx.kext` 保留但 Disabled，作为回退。
 - 新增 `Radeonized/RBAMDFramebuffer.kext`、MIT/AMD 许可证、`Radeonized/README.md` 与 `scripts/install-radeonized-framebuffer.sh`（dry-run、备份、aux KC UUID 回读）。
 - 实测：Metal 3、2560×1600 @120Hz、HiDPI 1280×800、512 MB UMA；**Wi-Fi 正常、睡眠失效、其他功能未复测**。
+- 本机主观对比：流畅度低于 `main`（RembrandtGfx），卡顿/掉帧更多；日常使用建议 `main`，本分支定位实验/参考。
 - OpenCore `Resolution=2560x1600@32`（保持 fb 几何），`UIScale=2`（引导图标放大）。
 - 新增实测截图 `docs/images/radeonized-680m.png`。
 
@@ -22,7 +23,7 @@
 
 - README 定向更新为 Radeonized 实验分支，明确 main 仍是 RembrandtGfx 稳定基线。
 - 更新 `docs/GPU.md`、`docs/INSTALL.md`、`docs/COMPONENTS.md`、`THIRD_PARTY_NOTICES.md`。
-- 记录睡眠失效、其他功能未复测、512 MB 显存与 42" 物理尺寸显示限制。
+- 记录睡眠失效、其他功能未复测、512 MB 显存、42" 物理尺寸显示限制，以及本机流畅度低于 main（Radeonized vs RembrandtGfx）。
 
 ## 2026-11-24
 
