@@ -12,4 +12,5 @@ docs/config-backups/
 *.log
 *.plist.bak
 config-before-*.plist
+config.before-*.plist
 SMBIOS-*.txt
