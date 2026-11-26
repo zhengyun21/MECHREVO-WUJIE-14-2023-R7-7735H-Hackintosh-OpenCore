@@ -1,5 +1,7 @@
 # AirDrop / AWDL（Intel AX210）
 
+> 本页为 `main`（RembrandtGfx）基线的 AirDrop/AWDL 配置；`radeonized-680m` 分支沿用该配置，但未在本分支复测。
+
 ## 状态
 
 - 当前：**AirDrop 可用（实验性 beta）**

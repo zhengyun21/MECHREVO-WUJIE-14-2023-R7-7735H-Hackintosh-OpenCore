@@ -86,7 +86,7 @@
 
 - U 盘 `H:`（卷标 OPENCORE，GPT/FAT32）：OpenCore 1.0.8 + `com.apple.recovery.boot`（696-28424）
 - `H:\EFI\OC\config-before-*.plist`：19 个配置备份，回滚 = 复制回 config.plist
-- 工作目录 `C:\Users\novice21\Doubao\chats\2026-10-28\new-chat-1\`：全部修改脚本 + 镜像下载工具（macrecovery.py / download_recovery.py）
+- 工作目录 `C:\Users\<user>\Doubao\chats\2026-10-28\new-chat-1\`：全部修改脚本 + 镜像下载工具（macrecovery.py / download_recovery.py）
 - 本地镜像：`rec_ventura\`（696-28424）+ `rec_sequoia_backup\`（原 15.6）
 
 ---

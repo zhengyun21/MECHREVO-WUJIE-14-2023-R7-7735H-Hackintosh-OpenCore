@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-11-26
+
+### Radeonized 分支（`radeonized-680m`）
+
+- 新增实验分支：显卡从 RembrandtGfx 切换为 [Radeonized](https://github.com/FranciumOS-org/Radeonized) v0.1.1。
+- 680M 以原生 `1002:1681` 出现；删除 `device-id 0x73FF` / `model` / `ATY,bin_image` / `CFG_*`，不再伪装 Navi 23，不需要 VBIOS 注入。
+- `RembrandtGPU.kext` 排在 `Lilu.kext` 之后并启用；`RembrandtGfx.kext` 保留但 Disabled，作为回退。
+- 新增 `Radeonized/RBAMDFramebuffer.kext`、MIT/AMD 许可证、`Radeonized/README.md` 与 `scripts/install-radeonized-framebuffer.sh`（dry-run、备份、aux KC UUID 回读）。
+- 实测：Metal 3、2560×1600 @120Hz、HiDPI 1280×800、512 MB UMA；**Wi-Fi 正常、睡眠失效、其他功能未复测**。
+- OpenCore `Resolution=2560x1600@32`（保持 fb 几何），`UIScale=2`（引导图标放大）。
+- 新增实测截图 `docs/images/radeonized-680m.png`。
+
+### 安全
+
+- 移除 main 上遗留的两个 `config.before-*.plist` 备份（含真实 SMBIOS/ROM 与 `ATY,bin_image`）。
+- `.gitignore` 增加 `config.before-*.plist`。
+- 说明：main 历史/fork/缓存仍可能保留旧对象，旧三码请视为已泄露；彻底清理 main 历史需单独重写/force-push。
+
+### 文档
+
+- README 定向更新为 Radeonized 实验分支，明确 main 仍是 RembrandtGfx 稳定基线。
+- 更新 `docs/GPU.md`、`docs/INSTALL.md`、`docs/COMPONENTS.md`、`THIRD_PARTY_NOTICES.md`。
+- 记录睡眠失效、其他功能未复测、512 MB 显存与 42" 物理尺寸显示限制。
+
 ## 2026-11-24
 
 ### 追加实测

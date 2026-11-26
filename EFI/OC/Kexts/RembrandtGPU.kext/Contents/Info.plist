@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleExecutable</key>
+    <string>RembrandtGPU</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.rembrandtgpu.plugin</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <!-- 3br: the DISPLAY name only. RembrandtGPU is still the IOClass,
+         the IOMatchCategory and the personality key below, so it is an
+         identifier and is left alone; this one key is not. -->
+    <key>CFBundleName</key>
+    <string>Radeonized</string>
+    <key>CFBundlePackageType</key>
+    <string>KEXT</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleVersion</key>
+    <string>1.0.0</string>
+    <key>IOKitPersonalities</key>
+    <dict>
+        <key>RembrandtGPU</key>
+        <dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.rembrandtgpu.plugin</string>
+            <key>IOClass</key>
+            <string>RembrandtGPU</string>
+            <key>IOMatchCategory</key>
+            <string>RembrandtGPU</string>
+            <key>IOProviderClass</key>
+            <string>IOResources</string>
+            <key>IOResourceMatch</key>
+            <string>IOKit</string>
+        </dict>
+        <key>RembrandtGPUPeer</key>
+        <dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.rembrandtgpu.plugin</string>
+            <key>IOClass</key>
+            <string>RembrandtGPUPeer</string>
+            <key>IOMatchCategory</key>
+            <string>ATIFramebuffer</string>
+            <key>IOPCIMatch</key>
+            <string>0x16811002 0x164d1002</string>
+            <key>IOProbeScore</key>
+            <integer>65000</integer>
+            <key>IOProviderClass</key>
+            <string>IOPCIDevice</string>
+        </dict>
+        <key>RembrandtGPU HWServices (0x1681)</key>
+        <dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.apple.kext.AMDRadeonX6000HWServices</string>
+            <key>IOClass</key>
+            <string>AMDRadeonX6000_AMDRadeonHWServicesNavi</string>
+            <key>IOMatchCategory</key>
+            <string>AMDRadeonX6000HWServices</string>
+            <key>IOPCIMatch</key>
+            <string>0x16811002 0x164d1002</string>
+            <key>IOPropertyMatch</key>
+            <dict>
+                <key>LoadHWServices</key>
+                <true/>
+                <key>RBGPULoad</key>
+                <true/>
+            </dict>
+            <key>IOProviderClass</key>
+            <string>IOPCIDevice</string>
+        </dict>
+        <!-- 2ph: Apple's display controller, for the DAL dry run. Its OWN
+             match category, deliberately: Apple puts it in ATIFramebuffer,
+             where RembrandtGPUPeer sits at 65000 and would block it. A private
+             category avoids touching the peer at all. Gated on
+             LoadDisplayController, which the peer publishes only with
+             -rbgpudal, so without that arg this kext is never loaded. -->
+        <key>RembrandtGPU DisplayController (0x1681)</key>
+        <dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.apple.kext.AMDRadeonX6000Framebuffer</string>
+            <key>IOClass</key>
+            <string>AMDRadeonX6000_AmdRadeonControllerNavi21</string>
+            <key>IOMatchCategory</key>
+            <string>RBDisplayController</string>
+            <key>IOPCIMatch</key>
+            <string>0x16811002 0x164d1002</string>
+            <key>IOPropertyMatch</key>
+            <dict>
+                <key>LoadDisplayController</key>
+                <true/>
+                <key>RBGPULoad</key>
+                <true/>
+            </dict>
+            <key>IOProviderClass</key>
+            <string>IOPCIDevice</string>
+        </dict>
+        <!-- 2pi: Apple's framebuffer (the Wrangler). Apple ships it in
+             IOFramebuffer at score 60000, which would DISPLACE
+             IONDRVFramebuffer (20000) and leave no working display if DAL
+             cannot drive this chip. A PRIVATE category means it starts and
+             drives DAL's init without ever contesting the panel. Gated on
+             LoadDisplayWrangler, published only with -rbgpudalfb. -->
+        <key>RembrandtGPU DisplayWrangler (0x1681)</key>
+        <dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.apple.kext.AMDRadeonX6000Framebuffer</string>
+            <key>IOClass</key>
+            <string>AMDRadeonX6000_AmdGpuWrangler</string>
+            <key>IOMatchCategory</key>
+            <string>RBDisplayWrangler</string>
+            <key>IOPCIMatch</key>
+            <string>0x16811002 0x164d1002</string>
+            <key>IOPropertyMatch</key>
+            <dict>
+                <key>LoadDisplayWrangler</key>
+                <true/>
+                <key>RBGPULoad</key>
+                <true/>
+            </dict>
+            <key>IOProviderClass</key>
+            <string>IOPCIDevice</string>
+        </dict>
+        <!-- 2pk: the Wrangler, PROMOTED into IOFramebuffer. Score 30000
+             beats .Display_boot's measured post-probe 20000, so this wins the
+             category - which is the point: nothing drives DAL unless the
+             Wrangler really is the framebuffer. Its start() hook calls
+             Apple's start (every register write dropped, trace captured) and
+             then returns false, so xnu's "start the best until success" loop
+             falls through to IONDRVFramebuffer and the panel keeps working.
+             Gated on LoadDisplayWranglerFB, published only with
+             -rbgpudalfbreal. -->
+        <key>RembrandtGPU DisplayWranglerFB (0x1681)</key>
+        <dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.apple.kext.AMDRadeonX6000Framebuffer</string>
+            <key>IOClass</key>
+            <string>AMDRadeonX6000_AmdGpuWrangler</string>
+            <key>IOMatchCategory</key>
+            <string>IOFramebuffer</string>
+            <key>IOPCIMatch</key>
+            <string>0x16811002 0x164d1002</string>
+            <key>IOProbeScore</key>
+            <integer>30000</integer>
+            <key>IOPropertyMatch</key>
+            <dict>
+                <key>LoadDisplayWranglerFB</key>
+                <true/>
+                <key>RBGPULoad</key>
+                <true/>
+            </dict>
+            <key>IOProviderClass</key>
+            <string>IOPCIDevice</string>
+        </dict>
+        <key>RembrandtGPU Accelerator (0x1681)</key>
+        <dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.apple.kext.AMDRadeonX6000</string>
+            <key>IOClass</key>
+            <string>AMDRadeonX6000_AMDNavi21GraphicsAccelerator</string>
+            <key>IOMatchCategory</key>
+            <string>IOAccelerator</string>
+            <key>IOPCIMatch</key>
+            <string>0x16811002 0x164d1002</string>
+            <key>IOPropertyMatch</key>
+            <dict>
+                <key>LoadAccelerator</key>
+                <true/>
+                <key>RBGPULoad</key>
+                <true/>
+            </dict>
+            <key>IOProviderClass</key>
+            <string>IOPCIDevice</string>
+        </dict>
+    </dict>
+    <key>OSBundleLibraries</key>
+    <dict>
+        <key>as.vit9696.Lilu</key>
+        <string>1.4.7</string>
+        <key>com.apple.iokit.IOPCIFamily</key>
+        <string>2.9</string>
+        <key>com.apple.kpi.bsd</key>
+        <string>12.0.0</string>
+        <key>com.apple.kpi.iokit</key>
+        <string>12.0.0</string>
+        <key>com.apple.kpi.libkern</key>
+        <string>12.0.0</string>
+        <key>com.apple.kpi.mach</key>
+        <string>12.0.0</string>
+        <key>com.apple.kpi.unsupported</key>
+        <string>12.0.0</string>
+    </dict>
+    <key>OSBundleRequired</key>
+    <string>Root</string>
+</dict>
+</plist>

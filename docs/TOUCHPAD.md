@@ -1,5 +1,7 @@
 # 触控板：VoodooI2C + 系统原生轻点
 
+> 本页为 `main`（RembrandtGfx）基线的触控板配置；`radeonized-680m` 分支沿用该配置，但未在本分支复测。
+
 ## 硬件
 
 本机触控板是 **I2C HID**（不是 PS/2），ACPI 拓扑：
